@@ -1,0 +1,16 @@
+#barGraph rect {
+  fill: #4aaeea;
+}
+
+#barGraph text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+body {
+  background: #1a1a1a;
+  color: #eaeaea;
+  padding: 10px;
+  font-family: 'Raleway', sans-serif;
+}

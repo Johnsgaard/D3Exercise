@@ -1,0 +1,31 @@
+{
+  "name": "d3example",
+  "version": "1.0.0",
+  "description": "VizworX D3 Code Exercise",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src - d lib",
+    "start": "node build.js && webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Johnsgaard/D3Exercise.git"
+  },
+  "keywords": [
+    "D3",
+    "JavaScript"
+  ],
+  "author": "Joshua Johnsgaard",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Johnsgaard/D3Exercise/issues"
+  },
+  "homepage": "https://github.com/Johnsgaard/D3Exercise#readme",
+  "devDependencies": {
+    "babel-cli": "6.26.0",
+    "babel-preset-env": "1.6.1",
+    "d3": "4.12.2",
+    "webpack": "3.10.0",
+    "webpack-dev-server": "2.9.7"
+  }
+}
