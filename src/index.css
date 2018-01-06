@@ -4,11 +4,27 @@
 
 #barGraph text {
   fill: white;
-  font: 10px sans-serif;
-  text-anchor: end;
+  font-size: 14px;
+}
+
+.axis text {
+  font-size: 14px;
+}
+
+.axis path,
+.axis line {
+  fill: #fff;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.graphContainer {
+  background-color: #2a2a2a;
 }
 
 body {
+  height: 100%;
+  width: 100%;
   background: #1a1a1a;
   color: #eaeaea;
   padding: 10px;
