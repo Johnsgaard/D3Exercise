@@ -139,20 +139,28 @@ const renderBarGraph = () => {
 // END BAR GRAPH VISUALIZATION
 
 // START PIE CHART VISUALIZATION
-const renderCitySector = () => {
+const renderPieViz = (vizID) => {
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
-    console.log(data);
     var sectors = {};
     data.map(d => {
       const resCount = parseInt(d.RES_CNT, 10);
       // Totals up the RES_CNT
-      if(sectors.hasOwnProperty(d.SECTOR)) {
-        const prev = sectors[d.SECTOR].valueOf();
-        return sectors[d.SECTOR] = (prev + resCount);
+      if(vizID !== 1) {
+        if(sectors.hasOwnProperty(d.SECTOR)) {
+          const prev = sectors[d.SECTOR].valueOf();
+          return sectors[d.SECTOR] = (prev + resCount);
+        }
+        // if the sector does not exist create a new sector and init it with the RES_CNT
+        sectors[d.SECTOR] = resCount;
+      } else {
+        if(sectors.hasOwnProperty(d.COMM_STRUCTURE)) {
+          const prev = sectors[d.COMM_STRUCTURE].valueOf();
+          return sectors[d.COMM_STRUCTURE] = (prev + resCount);
+        }
+        // if the sector does not exist create a new sector and init it with the RES_CNT
+        sectors[d.COMM_STRUCTURE] = resCount;
       }
-      // if the sector does not exist create a new sector and init it with the RES_CNT
-      sectors[d.SECTOR] = resCount;
     });
 
     const colorWheel = d3.scaleOrdinal()
@@ -170,14 +178,13 @@ const renderCitySector = () => {
     const pie = d3.pie()
       .sort(null)
       .value(d => d);
-
+    // D3.pie() accepts data as [ values ]
     const pieData = Object.values(sectors);
-    console.log(pieData);
-    console.log(sectors);
+
     const group = pieChart.selectAll(".arc")
-      .data(pie(pieData))
-        .enter().append("g")
-        .attr("class", "arc");
+      .data(pie(pieData)).enter()
+        .append("g")
+          .attr("class", "arc");
 
     group.append("path")
       .attr("d", arc)
@@ -191,5 +198,6 @@ const renderCitySector = () => {
   });
 };
 // END PIE CHART VISUALIZATION
-renderCitySector();
+renderPieViz(2);
+//renderPieViz(1);
 renderBarGraph();
