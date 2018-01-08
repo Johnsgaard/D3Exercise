@@ -139,28 +139,19 @@ const renderBarGraph = () => {
 // END BAR GRAPH VISUALIZATION
 
 // START PIE CHART VISUALIZATION
-const renderPieViz = (vizID = 99) => {
+const renderPieViz = (dataKey = "SECTOR") => {
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
     var sectors = {};
-    data.map(d => {
+    data.forEach(d => {
       const resCount = parseInt(d.RES_CNT, 10);
       // Totals up the RES_CNT
-      if(vizID !== 1) {
-        if(sectors.hasOwnProperty(d.SECTOR)) {
-          const prev = sectors[d.SECTOR].valueOf();
-          return sectors[d.SECTOR] = (prev + resCount);
+        if(sectors.hasOwnProperty(d[dataKey])) {
+          const prev = sectors[d[dataKey]].valueOf();
+          return sectors[d[dataKey]] = (prev + resCount);
         }
         // if the sector does not exist create a new sector and init it with the RES_CNT
-        sectors[d.SECTOR] = resCount;
-      } else {
-        if(sectors.hasOwnProperty(d.COMM_STRUCTURE)) {
-          const prev = sectors[d.COMM_STRUCTURE].valueOf();
-          return sectors[d.COMM_STRUCTURE] = (prev + resCount);
-        }
-        // if the sector does not exist create a new sector and init it with the RES_CNT
-        sectors[d.COMM_STRUCTURE] = resCount;
-      }
+        sectors[d[dataKey]] = resCount;
     });
 
     const colorWheel = d3.scaleOrdinal()
