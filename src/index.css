@@ -29,13 +29,13 @@
 }
 
 .graphTitle {
-  fill: #dbdbdb;
+  fill: #ffffff;
   font-size: 20px;
   font-weight: bold;
 }
 
 #barGraph .graphLabel {
-  fill: #ffffff;
+  fill: #919191;
   font-size: 16px;
   font-style: italic;
 }
