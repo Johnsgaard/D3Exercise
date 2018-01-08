@@ -4,7 +4,7 @@ import './index.css';
 //Supported Communities
 const supportedComms = ['EDG', 'ACA', 'BNF', 'CRE', 'PAN'];
 
-// Bar Graph Config
+// Global Constants
 const margin = {
   top: 70,
   right: 100,
@@ -14,6 +14,7 @@ const margin = {
 
 const width = 960 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
+const radius = Math.min(width, height) / 2;
 
 // set the ranges
 var x = d3.scaleBand()
@@ -23,8 +24,9 @@ var y = d3.scaleLinear()
           .range([height, 0]);
 
 // SVG element for Pie Chart
-const PieChart = d3.select("#multiGraph")
+const pieChart = d3.select("#multiGraph")
   .append("svg")
+    .attr("class", "pie")
     .attr("width", width)
     .attr("height", height)
   .append("g")
@@ -134,5 +136,60 @@ const renderBarGraph = () => {
       .attr("font-weight", "bold");
   });
 };
+// END BAR GRAPH VISUALIZATION
 
+// START PIE CHART VISUALIZATION
+const renderCitySector = () => {
+  d3.json('/CityOfCalgary2016.json', (error, data) => {
+    if(error) { throw error; }
+    console.log(data);
+    var sectors = {};
+    data.map(d => {
+      const resCount = parseInt(d.RES_CNT, 10);
+      // Totals up the RES_CNT
+      if(sectors.hasOwnProperty(d.SECTOR)) {
+        const prev = sectors[d.SECTOR].valueOf();
+        return sectors[d.SECTOR] = (prev + resCount);
+      }
+      // if the sector does not exist create a new sector and init it with the RES_CNT
+      sectors[d.SECTOR] = resCount;
+    });
+
+    const colorWheel = d3.scaleOrdinal()
+      .range(["#e36363", "#f2ae47", "#fcff65", "#7af45b", "#6fdcff", "#728de9",
+        "#8f349a", "#ee567f", "#e3c49b"]);
+
+    const arc = d3.arc()
+      .outerRadius(radius)
+      .innerRadius(radius * 0.6);
+
+    const labelArc = d3.arc()
+      .outerRadius(radius)
+      .innerRadius(radius * 0.6);
+
+    const pie = d3.pie()
+      .sort(null)
+      .value(d => d);
+
+    const pieData = Object.values(sectors);
+    console.log(pieData);
+    console.log(sectors);
+    const group = pieChart.selectAll(".arc")
+      .data(pie(pieData))
+        .enter().append("g")
+        .attr("class", "arc");
+
+    group.append("path")
+      .attr("d", arc)
+      .style("fill", d => colorWheel(d.data));
+
+    group.append("text")
+      .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+      .attr("dy", ".5em")
+      .attr("dx", "-1.5em")
+      .text(d => d.data);
+  });
+};
+// END PIE CHART VISUALIZATION
+renderCitySector();
 renderBarGraph();
