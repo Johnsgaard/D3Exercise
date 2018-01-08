@@ -139,7 +139,7 @@ const renderBarGraph = () => {
 // END BAR GRAPH VISUALIZATION
 
 // START PIE CHART VISUALIZATION
-const renderPieViz = (vizID) => {
+const renderPieViz = (vizID = 99) => {
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
     var sectors = {};
@@ -198,6 +198,5 @@ const renderPieViz = (vizID) => {
   });
 };
 // END PIE CHART VISUALIZATION
-renderPieViz(2);
-//renderPieViz(1);
+renderPieViz();
 renderBarGraph();
