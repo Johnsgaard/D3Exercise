@@ -1,32 +1,58 @@
-#barGraph rect {
-  fill: #4aaeea;
+#barGraph .bar {
+  fill: #71b0d9;
+  transition: fill .4s ease;
+  z-index: 10;
 }
 
-#barGraph text {
-  fill: white;
+#barGraph .bar:hover {
+  fill: #3097d9;
+}
+
+/* Bar Graph's tick styles */
+#barGraph .tick text {
+  fill: #dbdbdb;
   font-size: 14px;
 }
 
 .axis text {
-  font-size: 14px;
+  font-size: 1px;
 }
 
 .axis path,
 .axis line {
-  fill: #fff;
-  stroke: #fff;
+  stroke: #dbdbdb;
   shape-rendering: crispEdges;
 }
 
 .graphContainer {
-  background-color: #2a2a2a;
+  background-color: #2e2e2e;
+}
+
+.graphTitle {
+  fill: #dbdbdb;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#barGraph .graphLabel {
+  fill: #ffffff;
+  font-size: 16px;
+  font-style: italic;
+}
+
+.tooltip text {
+  fill: #dbdbdb;
+  font-size: 16px;
+}
+
+.tooltip rect {
+  fill: none;
 }
 
 body {
   height: 100%;
   width: 100%;
-  background: #1a1a1a;
-  color: #eaeaea;
+  background: #dbdbdb;
   padding: 10px;
   font-family: 'Raleway', sans-serif;
 }

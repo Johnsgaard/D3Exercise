@@ -6,27 +6,33 @@ const supportedComms = ['EDG', 'ACA', 'BNF', 'CRE', 'PAN'];
 
 // Bar Graph Config
 const margin = {
-  top: 20,
-  right: 30,
-  bottom: 30,
-  left: 40
+  top: 70,
+  right: 100,
+  bottom: 70,
+  left: 100,
 };
 
 const width = 960 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
-const x = d3.scaleOrdinal([0, width], .1, .3);
-const y = d3.scaleLinear([height, 0]);
+// set the ranges
+var x = d3.scaleBand()
+          .range([0, width])
+          .padding(0.1);
+var y = d3.scaleLinear()
+          .range([height, 0]);
 
 const barGraph = d3.select("#barGraph")
   .append("svg")
-  .attr("class", "graphContainer")
-  .attr("width", width + (2 * margin.left) + margin.right)
-  .attr("height", height + margin.top + margin.bottom);
+    .attr("class", "graphContainer")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-const xAxis = d3.axisBottom(x);
+var xAxis = d3.axisBottom(x);
 
-const yAxis = d3.axisLeft(y);
+var yAxis = d3.axisLeft(y);
 
 const renderBarGraph = () => {
   d3.json('/CityOfCalgary2016.json', function(error, data) {
@@ -34,71 +40,90 @@ const renderBarGraph = () => {
     // filter all of the census data to only display supported communities
     const filteredData = data.filter(d => supportedComms.includes(d.COMM_CODE));
     x.domain(filteredData.map(d => {
-      return d.COMM_CODE;
-    }));
+      return d.NAME;}))
     y.domain([0, d3.max(filteredData, (d) => {
       //typecast to a number
       const resCount = parseInt(d.RES_CNT, 10);
       return resCount;
     })]);
 
+    // graph title
     barGraph.append("text")
-      .attr("class", "title")
-      .attr("x", 20)
-      .attr("y", 20)
+      .attr("class", "graphTitle")
+      .attr("x", width / 3)
+      .attr("y", -margin.top + 30)
       .text("City of Calgary Census 2016");
 
+    // axis elements
     barGraph.append("g")
-      .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-      .selectAll(".tick text")
-      .call(wrap, x.bandWidth())
-      .text("Communities");
+      .attr("class", "axis")
+      .call(d3.axisBottom(x));
 
     barGraph.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .text("Resident Count");
+      .attr("class", "axis")
+      .call(d3.axisLeft(y));
 
+    // graph data
     barGraph.selectAll(".bar")
       .data(filteredData)
       .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.COMM_CODE); })
-      .attr("width", x.bandWidth())
-      .attr("y", function(d) { return y(parseInt(d.RES_CNT, 10)); })
-      .attr("height", function(d) { return height - y(parseInt(d.RES_CNT, 10)); });
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.NAME); })
+        .attr("width", x.bandwidth())
+        .attr("y", function(d) {
+          const resCount = parseInt(d.RES_CNT, 10);
+          return y(resCount);
+        })
+        .attr("height", function(d) {
+          const resCount = parseInt(d.RES_CNT, 10);
+          return height - y(d.RES_CNT);
+        })
+        .on("mouseover", function() { tooltip.style("display", null); })
+        .on("mouseout", function() { tooltip.style("display", "none"); })
+        .on("mousemove", function(d) {
+          var xPosition = d3.mouse(this)[0] - 5;
+          var yPosition = d3.mouse(this)[1] - 5;
+          tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+          tooltip.select("text").text(d.RES_CNT);
+        });
+
+    // Y axis label
+    barGraph.append("text")
+      .attr("class", "graphLabel")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 10 - margin.left)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Resident Count");
+
+    // X axis label
+    barGraph.append("text")
+      .attr("class", "graphLabel")
+      .attr("transform",
+           "translate(" + (width/2) + " ," +
+                          (height + margin.top - 20) + ")")
+      .style("text-anchor", "middle")
+      .text("Communities");
+
+    // Tooltip
+    const tooltip = barGraph.append("g")
+    .attr("class", "tooltip")
+    .style("display", "none");
+
+    tooltip.append("rect")
+      .attr("width", 60)
+      .attr("height", 20)
+
+    tooltip.append("text")
+      .attr("x", 10)
+      .attr("dy", "-1em")
+      .style("text-anchor", "middle")
+      .attr("font-size", "12px")
+      .attr("font-weight", "bold");
   });
 };
 
-function wrap(text, width) {
-  text.each(function() {
-    var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        y = text.attr("y"),
-        dy = parseFloat(text.attr("dy")),
-        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-    while (word = words.pop()) {
-      line.push(word);
-      tspan.text(line.join(" "));
-      if (tspan.node().getComputedTextLength() > width) {
-        line.pop();
-        tspan.text(line.join(" "));
-        line = [word];
-        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-      }
-    }
-  });
-}
-
-function type(d) {
-  d.value = +d.value;
-  return d;
-}
 
 renderBarGraph();
