@@ -43,6 +43,7 @@ var xAxis = d3.axisBottom(x);
 
 var yAxis = d3.axisLeft(y);
 
+// START BAR GRAPH VISUALIZATION
 const renderBarGraph = () => {
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
