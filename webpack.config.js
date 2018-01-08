@@ -26,7 +26,22 @@ module.exports = {
           test: /\.css$/,
           use: ['style-loader', 'css-loader']
         },
+        {
+          test: /\.(html)$/,
+          use: {
+            loader: 'html-loader',
+            options: {
+              attrs: [':data-src']
+            }
+          }
+        },
       ]
    },
-  plugins: [HtmlWebpackPluginConfig]
+  plugins: [
+    HtmlWebpackPluginConfig,
+    new HtmlWebpackPlugin({  // Also generate a test.html
+      filename: 'demo2.html',
+      template: 'src/demo2.html'
+    })
+  ]
 }

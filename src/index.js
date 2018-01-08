@@ -22,6 +22,15 @@ var x = d3.scaleBand()
 var y = d3.scaleLinear()
           .range([height, 0]);
 
+// SVG element for Pie Chart
+const PieChart = d3.select("#multiGraph")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+// SVG element for Bar Graph
 const barGraph = d3.select("#barGraph")
   .append("svg")
     .attr("class", "graphContainer")
@@ -35,7 +44,7 @@ var xAxis = d3.axisBottom(x);
 var yAxis = d3.axisLeft(y);
 
 const renderBarGraph = () => {
-  d3.json('/CityOfCalgary2016.json', function(error, data) {
+  d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
     // filter all of the census data to only display supported communities
     const filteredData = data.filter(d => supportedComms.includes(d.COMM_CODE));
@@ -69,18 +78,18 @@ const renderBarGraph = () => {
       .data(filteredData)
       .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", function(d) { return x(d.NAME); })
+        .attr("x", (d) => { return x(d.NAME); })
         .attr("width", x.bandwidth())
-        .attr("y", function(d) {
+        .attr("y", (d) => {
           const resCount = parseInt(d.RES_CNT, 10);
           return y(resCount);
         })
-        .attr("height", function(d) {
+        .attr("height", (d) => {
           const resCount = parseInt(d.RES_CNT, 10);
           return height - y(d.RES_CNT);
         })
-        .on("mouseover", function() { tooltip.style("display", null); })
-        .on("mouseout", function() { tooltip.style("display", "none"); })
+        .on("mouseover", () => tooltip.style("display", null))
+        .on("mouseout", () => tooltip.style("display", "none"))
         .on("mousemove", function(d) {
           var xPosition = d3.mouse(this)[0] - 5;
           var yPosition = d3.mouse(this)[1] - 5;
@@ -124,6 +133,5 @@ const renderBarGraph = () => {
       .attr("font-weight", "bold");
   });
 };
-
 
 renderBarGraph();
