@@ -13,7 +13,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'index_bundle.js'
+    filename: 'index_bundle.js',
   },
   module: {
       loaders: [
@@ -41,7 +41,8 @@ module.exports = {
     HtmlWebpackPluginConfig,
     new HtmlWebpackPlugin({  // Also generate a test.html
       filename: 'demo2.html',
-      template: 'src/demo2.html'
+      template: './src/demo2.html',
+      inject: 'body',
     })
   ]
 }

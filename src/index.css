@@ -49,6 +49,16 @@
   fill: none;
 }
 
+.labelVal {
+    font-style: normal;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.labelKey {
+    font-size: 0.8em;
+}
+
 body {
   height: 100%;
   width: 100%;

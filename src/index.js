@@ -6,17 +6,17 @@ const supportedComms = ['EDG', 'ACA', 'BNF', 'CRE', 'PAN'];
 
 // Global Constants
 const margin = {
-  top: 70,
-  right: 100,
-  bottom: 70,
-  left: 100,
+  top: 100,
+  right: 130,
+  bottom: 100,
+  left: 130,
 };
 
-const width = 960 - margin.left - margin.right;
-const height = 500 - margin.top - margin.bottom;
-const radius = Math.min(width, height) / 2;
+const width = 1260 - margin.left - margin.right;
+const height = 800 - margin.top - margin.bottom;
+const radius = Math.min(width, height) / 3;
 
-// set the ranges
+// Ranges for bar graph
 var x = d3.scaleBand()
           .range([0, width])
           .padding(0.1);
@@ -28,7 +28,7 @@ const pieChart = d3.select("#multiGraph")
   .append("svg")
     .attr("class", "pie")
     .attr("width", width)
-    .attr("height", height)
+    .attr("height", height + margin.top)
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
@@ -41,6 +41,7 @@ const barGraph = d3.select("#barGraph")
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+// Axis for bar graph
 var xAxis = d3.axisBottom(x);
 
 var yAxis = d3.axisLeft(y);
@@ -63,7 +64,7 @@ const renderBarGraph = () => {
     barGraph.append("text")
       .attr("class", "graphTitle")
       .attr("x", width / 3)
-      .attr("y", -margin.top + 30)
+      .attr("y", - margin.top + 30)
       .text("City of Calgary Census 2016");
 
     // axis elements
@@ -119,7 +120,7 @@ const renderBarGraph = () => {
       .style("text-anchor", "middle")
       .text("Communities");
 
-    // Tooltip
+    // Creates tooltip for bar graph
     const tooltip = barGraph.append("g")
     .attr("class", "tooltip")
     .style("display", "none");
@@ -138,56 +139,84 @@ const renderBarGraph = () => {
 };
 // END BAR GRAPH VISUALIZATION
 
-// START PIE CHART VISUALIZATION
+// START DONUT CHART VISUALIZATION
 const renderPieViz = (dataKey = "SECTOR") => {
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
-    var sectors = {};
+
+    // Creates a simple object structure to display RES_CNT total depending on
+    // passed in parameter ( dataKey )
+    var simpleObj = {};
     data.forEach(d => {
       const resCount = parseInt(d.RES_CNT, 10);
       // Totals up the RES_CNT
-        if(sectors.hasOwnProperty(d[dataKey])) {
-          const prev = sectors[d[dataKey]].valueOf();
-          return sectors[d[dataKey]] = (prev + resCount);
-        }
-        // if the sector does not exist create a new sector and init it with the RES_CNT
-        sectors[d[dataKey]] = resCount;
+      if(simpleObj.hasOwnProperty(d[dataKey])) {
+        const prev = simpleObj[d[dataKey]].valueOf();
+        return simpleObj[d[dataKey]] = (prev + resCount);
+      }
+      // if the sector does not exist create a new sector and init it with the RES_CNT
+      simpleObj[d[dataKey]] = resCount;
     });
 
+    // Re-formats the ( simpleObj ) data so data being passed into d3.pie method has both key and value.
+    // For labelling purposes
+    const pieObject = [];
+    Object.entries(simpleObj).forEach(sector => {
+      var formattedObj = {};
+      formattedObj.key = sector[0];
+      formattedObj.val = sector[1];
+      return pieObject.push(formattedObj);
+    });
+
+    // Colours for chart
     const colorWheel = d3.scaleOrdinal()
       .range(["#e36363", "#f2ae47", "#fcff65", "#7af45b", "#6fdcff", "#728de9",
         "#8f349a", "#ee567f", "#e3c49b"]);
 
+    // Configures charts shape
     const arc = d3.arc()
       .outerRadius(radius)
       .innerRadius(radius * 0.6);
 
     const labelArc = d3.arc()
       .outerRadius(radius)
-      .innerRadius(radius * 0.6);
+      .innerRadius(radius * 1.5);
 
+    // Constructs a new Pie element
     const pie = d3.pie()
-      .sort(null)
-      .value(d => d);
-    // D3.pie() accepts data as [ values ]
-    const pieData = Object.values(sectors);
+      // .sort(function(a, b) { return a.val > b.val; })
+      .sortValues((a, b) => { return a - b; })
+      .value(d => d.val);
 
+    // Creates arc elements
     const group = pieChart.selectAll(".arc")
-      .data(pie(pieData)).enter()
+      .data(pie(pieObject)).enter()
         .append("g")
           .attr("class", "arc");
 
+    // Creates path and fills with color using ( val )
     group.append("path")
       .attr("d", arc)
-      .style("fill", d => colorWheel(d.data));
+      .style("fill", d => colorWheel(d.data.val));
 
+    // Label ( key )
     group.append("text")
-      .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-      .attr("dy", ".5em")
-      .attr("dx", "-1.5em")
-      .text(d => d.data);
+      .attr("class", "labelKey")
+      .attr("transform", (d) => ("translate(" + labelArc.centroid(d) + ")"))
+      .attr("dx", "-2em")
+      .text(d => d.data.key);
+
+    // Label ( val )
+    group.append("text")
+      .attr("class", "labelVal")
+      .attr("transform", (d) => ("translate(" + labelArc.centroid(d) + ")"))
+      .attr("dx", "-2em")
+      .attr("dy", "1em")
+      .text(d => d.data.val);
+
   });
 };
-// END PIE CHART VISUALIZATION
+// END DONUT CHART VISUALIZATION
+
 renderPieViz();
 renderBarGraph();
