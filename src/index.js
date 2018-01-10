@@ -144,6 +144,7 @@ const renderPieViz = (dataKey = "SECTOR") => {
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
 
+    var smallData = [];
     // Creates a simple object structure to display RES_CNT total depending on
     // passed in parameter ( dataKey )
     var simpleObj = {};
@@ -203,7 +204,14 @@ const renderPieViz = (dataKey = "SECTOR") => {
       .attr("class", "labelKey")
       .attr("transform", (d) => ("translate(" + labelArc.centroid(d) + ")"))
       .attr("dx", "-2em")
-      .text(d => d.data.key);
+      .text(d => {
+        if(d.data.val < 5000) {
+          // Prevent squishing of text and add small data to smallData array
+          smallData.push({ "key": d.data.key, "val": d.data.val });
+          return null;
+        }
+        return d.data.key;
+      });
 
     // Label ( val )
     group.append("text")
@@ -211,15 +219,35 @@ const renderPieViz = (dataKey = "SECTOR") => {
       .attr("transform", (d) => ("translate(" + labelArc.centroid(d) + ")"))
       .attr("dx", "-2em")
       .attr("dy", "1em")
-      .text(d => d.data.val);
+      .text(d => {
+        if(d.data.val < 5000) { return null; }
+        return d.data.val;
+      });
 
+      // Creates a legend for squished data on graph
+      if (smallData.length > 0) {
+        const legend = d3.select("#multiGraph")
+          .append("g")
+            .attr("id", "legend");
+
+        legend.append("text")
+          .text("Legend");
+
+        smallData.forEach(entry => {
+          legend.append("text")
+            .attr("x", 20)
+            .attr("y", 20)
+            .text(entry.key + ": " + entry.val);
+        });
+      }
   });
 };
 // END DONUT CHART VISUALIZATION
 
 // Remove SVG element from the DOM to replace with selected element
 const clearSVG = () => {
-  document.getElementById("resCountSVG").remove();
+  if(document.getElementById("resCountSVG")) document.getElementById("resCountSVG").remove();
+  if(document.getElementById("legend")) document.getElementById("legend").remove();
 };
 
 // Update chart title

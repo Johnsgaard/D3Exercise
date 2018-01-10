@@ -61,6 +61,7 @@
 
 #contentPane, svg {
   display: inline-block;
+  vertical-align: top;
 }
 
 #contentPane {
@@ -92,6 +93,14 @@
 	opacity: 0.999;
 	border-radius: 3px;
 }
+
+#legend text {
+  max-width: 60px;
+  word-wrap: break-word;
+  font-size: 13px;
+  padding: 10px;
+}
+
 
 body {
   height: 100%;
