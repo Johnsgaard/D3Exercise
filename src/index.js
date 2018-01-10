@@ -6,10 +6,10 @@ const supportedComms = ['EDG', 'ACA', 'BNF', 'CRE', 'PAN'];
 
 // Global Constants
 const margin = {
-  top: 100,
-  right: 130,
-  bottom: 100,
-  left: 130,
+  top: 60,
+  right: 190,
+  bottom: 60,
+  left: 190,
 };
 
 const width = 1260 - margin.left - margin.right;
@@ -23,24 +23,6 @@ var x = d3.scaleBand()
 var y = d3.scaleLinear()
           .range([height, 0]);
 
-// SVG element for Pie Chart
-const pieChart = d3.select("#multiGraph")
-  .append("svg")
-    .attr("class", "pie")
-    .attr("width", width)
-    .attr("height", height + margin.top)
-  .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-// SVG element for Bar Graph
-const barGraph = d3.select("#barGraph")
-  .append("svg")
-    .attr("class", "graphContainer")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
 // Axis for bar graph
 var xAxis = d3.axisBottom(x);
 
@@ -48,6 +30,15 @@ var yAxis = d3.axisLeft(y);
 
 // START BAR GRAPH VISUALIZATION
 const renderBarGraph = () => {
+  // SVG element for Bar Graph
+  const barGraph = d3.select("#barGraph")
+    .append("svg")
+      .attr("class", "graphContainer")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
     // filter all of the census data to only display supported communities
@@ -141,6 +132,15 @@ const renderBarGraph = () => {
 
 // START DONUT CHART VISUALIZATION
 const renderPieViz = (dataKey = "SECTOR") => {
+  // SVG element for Pie Chart
+  const pieChart = d3.select("#multiGraph")
+    .append("svg")
+      .attr("id", "resCountSVG")
+      .attr("class", "pie")
+      .attr("width", width)
+      .attr("height", height + margin.top)
+    .append("g")
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if(error) { throw error; }
 
@@ -184,7 +184,6 @@ const renderPieViz = (dataKey = "SECTOR") => {
 
     // Constructs a new Pie element
     const pie = d3.pie()
-      // .sort(function(a, b) { return a.val > b.val; })
       .sortValues((a, b) => { return a - b; })
       .value(d => d.val);
 
@@ -217,6 +216,31 @@ const renderPieViz = (dataKey = "SECTOR") => {
   });
 };
 // END DONUT CHART VISUALIZATION
+
+// Remove SVG element from the DOM to replace with selected element
+const clearSVG = () => {
+  document.getElementById("resCountSVG").remove();
+};
+
+// Update chart title
+const updateTitle = (title) => {
+  document.getElementById("chartHeader").innerHTML = title;
+};
+
+// Adding event listeners to DOM inputs
+if(document.getElementById("sectorBtn") || document.getElementById("commBtn")) {
+  document.getElementById("sectorBtn").addEventListener("click", () => {
+    clearSVG();
+    updateTitle("Resident Count for City Sectors");
+    renderPieViz("SECTOR");
+  });
+
+  document.getElementById("commBtn").addEventListener("click", () => {
+    clearSVG();
+    updateTitle("Resident Count for Community Structures");
+    renderPieViz("COMM_STRUCTURE");
+  });
+}
 
 renderPieViz();
 renderBarGraph();

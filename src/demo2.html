@@ -5,9 +5,16 @@
     <title>D3 Code Exercise 2</title>
   </head>
   <body>
-    <div id="multiGraph"></div>
-    <a class="navButton" href="/" title="View D3 Example One">Example One</a>
-    <input type="button" class="primaryButton" onclick="renderPieViz('SECTOR');" />
-    <input type="button" class="primaryButton" onclick="renderPieViz('COMM_STRUCTURE');" />
+    <a class="btn nav" href="/" title="View D3 Example One">Example One</a>
+    <div id="multiGraph">
+      <div id="contentPane">
+        <h1 id="chartHeader">Resident Count for City Sectors</h1>
+        <div id="chartBody">
+          <p>View Resident count by:</p>
+          <button id="sectorBtn" class="btn">City Sectors</button>
+          <button id="commBtn" class="btn">Community Structures</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
