@@ -34,22 +34,6 @@ const renderBarGraph = () => {
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  // Creates tooltip for bar graph
-  const tooltip = barGraph.append('g')
-    .attr('class', 'tooltip')
-    .style('display', 'none');
-
-  tooltip.append('rect')
-    .attr('width', 60)
-    .attr('height', 20);
-
-  tooltip.append('text')
-    .attr('x', 10)
-    .attr('dy', '-1em')
-    .style('text-anchor', 'middle')
-    .attr('font-size', '12px')
-    .attr('font-weight', 'bold');
-
   d3.json('/CityOfCalgary2016.json', (error, data) => {
     if (error) { throw error; }
     // filter all of the census data to only display supported communities
@@ -126,6 +110,22 @@ const renderBarGraph = () => {
       /* eslint-enable no-mixed-operators */
       .style('text-anchor', 'middle')
       .text('Communities');
+
+      // Creates tooltip for bar graph
+      const tooltip = barGraph.append('g')
+        .attr('class', 'tooltip')
+        .style('display', 'none');
+
+      tooltip.append('rect')
+        .attr('width', 60)
+        .attr('height', 20);
+
+      tooltip.append('text')
+        .attr('x', 10)
+        .attr('dy', '-1em')
+        .style('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold');
   });
 };
 // END BAR GRAPH VISUALIZATION
