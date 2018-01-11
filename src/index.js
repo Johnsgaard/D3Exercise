@@ -228,13 +228,16 @@ const renderPieViz = (dataKey = "SECTOR") => {
       if (smallData.length > 0) {
         const legend = d3.select("#multiGraph")
           .append("g")
+            .attr("height", "100px")
+            .attr("width", "100px")
             .attr("id", "legend");
 
         legend.append("text")
-          .text("Legend");
+          .attr("id", "legendHeader")
+          .text("Resident count less than 5000:");
 
         smallData.forEach(entry => {
-          legend.append("text")
+          legend.append("tspan")
             .attr("x", 20)
             .attr("y", 20)
             .text(entry.key + ": " + entry.val);

@@ -94,11 +94,32 @@
 	border-radius: 3px;
 }
 
-#legend text {
-  max-width: 60px;
+#legend #legendHeader {
+  font-weight: 500;
+  display: block;
+  border-bottom: 1px dashed #dbdbdb;
+  padding: 0.5em;
+  font-size: 17px;
+}
+
+#legend tspan {
+  width: 250px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  display: block;
+  text-indent: 0.5em;
+  font-size: 0.8em;
+}
+
+#legend {
+  max-width: 250px;
   word-wrap: break-word;
-  font-size: 13px;
-  padding: 10px;
+  background-color: #f6f6f6;
+  border-radius: 2px;
+  position: absolute;
+  margin-top: 4em;
+  margin-left: -4em;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
 
