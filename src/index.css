@@ -92,6 +92,7 @@
 	position: relative;
 	opacity: 0.999;
 	border-radius: 3px;
+  background-color: #fff;
 }
 
 #legend #legendHeader {
